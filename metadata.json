@@ -1,0 +1,6 @@
+{
+  "name": "SevaSetu",
+  "description": "A full-stack social-impact platform connecting users, volunteers, NGOs, and administrators with role-based panels, MySQL architecture, and Express backend.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
