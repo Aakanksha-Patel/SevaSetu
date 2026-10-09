@@ -31,7 +31,7 @@ export default function Footer() {
           </div>
 
           {/* Col 2: Four Role Portals */}
-          <div>
+          {/*<div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">
               Role-Based Panels
             </h4>
@@ -61,7 +61,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Col 3: Quick Navigation */}
           <div>
@@ -103,7 +103,7 @@ export default function Footer() {
           </div>
 
           {/* Col 4: Technology Stack */}
-          <div>
+          {/*<div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Database className="w-3.5 h-3.5 text-emerald-400" />
               Technology Stack
@@ -119,19 +119,19 @@ export default function Footer() {
               <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Axios</span>
               <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Recharts</span>
             </div>
-          </div>
+          </div>*/}
         </div>
 
         {/* Bottom bar */}
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} SevaSetu Social-Impact Platform. Student Project MVP.</p>
-          <div className="flex items-center gap-4 text-slate-400">
+          {/*<div className="flex items-center gap-4 text-slate-400">
             <span>MySQL Schema: 9 Relational Tables</span>
             <span>•</span>
             <span>REST API Backend</span>
             <span>•</span>
             <span>Pure JavaScript</span>
-          </div>
+          </div>*/}
         </div>
       </div>
     </footer>

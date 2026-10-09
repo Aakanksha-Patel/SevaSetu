@@ -4,7 +4,7 @@
 // Includes environment variable configuration and
 // high-fidelity mock fallback with the 8 relational tables
 // =======================================================
-
+import 'dotenv/config';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcryptjs';
 

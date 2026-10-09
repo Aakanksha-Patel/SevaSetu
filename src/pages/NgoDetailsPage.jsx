@@ -45,12 +45,13 @@ export default function NgoDetailsPage() {
   const [reviewSuccess, setReviewSuccess] = useState('');
   const [reviewError, setReviewError] = useState('');
 
-  const loadNgoDetails = async () => {
+  /*const loadNgoDetails = async () => {
     try {
       setLoading(true);
       const res = await ngosAPI.getById(id);
       const data = res.data?.data || {};
       setNgo(data.ngo || null);
+      //setNgo(data);
       setEvents(data.events || []);
       setFeedback(data.feedback || []);
     } catch (err) {
@@ -58,7 +59,33 @@ export default function NgoDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+
+  const loadNgoDetails = async () => {
+  try {
+    setLoading(true);
+
+    console.log("NGO ID from URL:", id);
+
+    const res = await ngosAPI.getById(id);
+
+    console.log("FULL NGO API RESPONSE:", res);
+    console.log("NGO API DATA:", res.data);
+    console.log("INNER DATA:", res.data?.data);
+
+    const data = res.data?.data || {};
+
+    setNgo(data.ngo || data || null);
+    setEvents(data.events || []);
+    setFeedback(data.feedback || []);
+
+  } catch (err) {
+    console.error("Error fetching NGO details:", err);
+    console.error("Response:", err.response?.data);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     loadNgoDetails();

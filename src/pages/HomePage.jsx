@@ -155,6 +155,16 @@ export default function HomePage() {
   const [donateModalNgo, setDonateModalNgo] = useState(null);
   const [activeStepTab, setActiveStepTab] = useState('volunteers');
 
+  //different images
+  const heroImages = [ 
+     "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1920&q=80", "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=1920&q=80",
+     "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1920&q=80",
+     "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=1920&q=80",
+   ];
+  const [currentHero, setCurrentHero] = useState(0);
+  
+
+  useEffect(() => { const interval = setInterval(() => { setCurrentHero((previous) => (previous + 1) % heroImages.length); }, 4000); return () => clearInterval(interval); }, []);
   useEffect(() => {
     async function loadData() {
       try {
@@ -194,8 +204,8 @@ export default function HomePage() {
       {/* =================================================== */}
       {/* 1. HERO SECTION */}
       {/* =================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950 text-white pt-20 pb-24 px-4 sm:px-6 lg:px-8">
-        {/* Subtle background glow */}
+      {/*<section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950 text-white pt-20 pb-24 px-4 sm:px-6 lg:px-8">
+        {/* Subtle background glow /}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
@@ -204,17 +214,17 @@ export default function HomePage() {
             Empowering India's Social Welfare Ecosystem
           </div>
 
-          {/* Exact user requested hero heading */}
+          {/* Exact user requested hero heading /}
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
             Find an NGO. Volunteer. Make an Impact.
           </h1>
 
-          {/* Exact user requested subtitle */}
+          {/* Exact user requested subtitle /}
           <p className="text-base sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
             SevaSetu connects people with NGOs and meaningful opportunities to create positive change.
           </p>
 
-          {/* Exact user requested buttons */}
+          {/* Exact user requested buttons /}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link
               to="/ngos"
@@ -233,7 +243,82 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </section>*/}
+
+      
+{/* 1. HERO SECTION */}
+<section className="relative isolate overflow-hidden text-white pt-20 pb-24 px-4 sm:px-6 lg:px-8">
+
+  {/* Automatic background image slideshow */}
+  {heroImages.map((image, index) => (
+    <div
+      key={image}
+      className={`absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
+        currentHero === index ? "opacity-100" : "opacity-0"
+      }`}
+      style={{ backgroundImage: `url('${image}')` }}
+    />
+  ))}
+
+  {/* Dark overlay */}
+  <div className="absolute inset-0 -z-10 bg-slate-950/65" />
+
+  {/* Green background glow */}
+  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none -z-10" />
+
+  {/* Existing hero content */}
+  <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
+
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-300">
+      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+      Empowering India's Social Welfare Ecosystem
+    </div>
+
+    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
+      Find an NGO. Volunteer. Make an Impact.
+    </h1>
+
+    <p className="text-base sm:text-xl text-slate-200 max-w-3xl mx-auto font-normal leading-relaxed">
+      SevaSetu connects people with NGOs and meaningful opportunities to create positive change.
+    </p>
+
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+      <Link
+        to="/ngos"
+        className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+      >
+        <Building2 className="w-4 h-4" />
+        Explore NGOs
+      </Link>
+
+      <Link
+        to="/events"
+        className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
+      >
+        <HeartHandshake className="w-4 h-4 text-emerald-400" />
+        Become a Volunteer
+      </Link>
+    </div>
+
+    {/* Slideshow indicators */}
+    <div className="flex justify-center gap-2 pt-4">
+      {heroImages.map((_, index) => (
+        <button
+          key={index}
+          onClick={() => setCurrentHero(index)}
+          aria-label={`Show background image ${index + 1}`}
+          className={`h-2 rounded-full transition-all ${
+            currentHero === index
+              ? "bg-emerald-400 w-8"
+              : "bg-white/50 w-2 hover:bg-white"
+          }`}
+        />
+      ))}
+    </div>
+
+  </div>
+</section>
+
 
       {/* =================================================== */}
       {/* 2. IMPACT STATISTICS SECTION */}
