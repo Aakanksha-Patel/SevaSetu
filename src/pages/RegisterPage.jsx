@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^(?:(?:\+91|91)[ -]?)?[6-9]\d{9}$/;
 
 const AVAILABLE_VOLUNTEER_SKILLS = [
   'Community Outreach',
@@ -125,6 +126,15 @@ export default function RegisterPage() {
       errors.email = 'Please provide a valid email format (e.g. name@example.com).';
     }
 
+    // Phone number
+    const phone = formData.phone.trim();
+
+    if (!phone) {
+      errors.phone = 'Phone number is required.';
+    } else if (!PHONE_REGEX.test(phone)) {
+      errors.phone =
+        'Enter a valid Indian mobile number (e.g. 9876543210 or +91 9876543210).';
+    }
     // 3. Password
     if (!formData.password) {
       errors.password = 'Password is required.';
@@ -146,6 +156,9 @@ export default function RegisterPage() {
       }
     }
 
+    if (!formData.location.trim()) {
+      errors.location = 'City / State is required.';
+    }
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -453,6 +466,11 @@ export default function RegisterPage() {
                 />
                 <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               </div>
+              {validationErrors.phone && (
+                <p className="text-xs text-rose-600 mt-1 font-medium">
+                  {validationErrors.phone}
+                </p>
+              )}
             </div>
 
             <div>

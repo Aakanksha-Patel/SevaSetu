@@ -64,12 +64,20 @@ export default function AdminDashboardHome() {
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    console.log('Admin dashboard: fetching data...');
     try {
       const [statsRes, ngosRes, eventsRes] = await Promise.all([
         adminAPI.getStats(),
         adminAPI.getNgos({ status: 'pending' }),
         adminAPI.getEvents({ status: 'pending' }),
       ]);
+
+      console.log('Stats response:', statsRes.data);
+      console.table(statsRes.data.charts?.userGrowth);
+console.table(statsRes.data.charts?.donationStatistics);
+console.table(statsRes.data.charts?.ngoVerificationStatus);
+    console.log('NGOs response:', ngosRes.data);
+    console.log('Events response:', eventsRes.data);
 
       if (statsRes.data?.success) {
         setStats(statsRes.data.stats);
@@ -150,37 +158,27 @@ export default function AdminDashboardHome() {
     );
   }
 
-  // Fallback defaults for charts
-  const userGrowthData = charts?.userGrowth || [
-    { month: 'Oct', users: 140, volunteers: 45 },
-    { month: 'Nov', users: 210, volunteers: 85 },
-    { month: 'Dec', users: 320, volunteers: 140 },
-    { month: 'Jan', users: 460, volunteers: 230 },
-    { month: 'Feb', users: 590, volunteers: 340 },
-    { month: 'Mar', users: 720, volunteers: 450 },
+
+  const userGrowthData = charts?.userGrowth ?? [];
+  const donationData = charts?.donationStatistics ?? [];
+
+  const ngoVerificationData = charts?.ngoVerificationStatus ?? [
+    { name: 'Verified', value: 0, color: '#10b981' },
+    { name: 'Pending', value: 0, color: '#f59e0b' },
+    { name: 'Rejected', value: 0, color: '#ef4444' },
   ];
 
-  const donationData = charts?.donationStatistics || [
-    { month: 'Oct', amount: 24000 },
-    { month: 'Nov', amount: 41000 },
-    { month: 'Dec', amount: 68000 },
-    { month: 'Jan', amount: 89000 },
-    { month: 'Feb', amount: 112000 },
-    { month: 'Mar', amount: 125000 },
-  ];
+  
 
-  const ngoVerificationData = charts?.ngoVerificationStatus || [
-    { name: 'Verified', value: stats?.ngosByStatus?.verified || 6, color: '#10b981' },
-    { name: 'Pending', value: stats?.ngosByStatus?.pending || 1, color: '#f59e0b' },
-    { name: 'Rejected', value: stats?.ngosByStatus?.rejected || 1, color: '#ef4444' },
-  ];
 
-  const totalUsers = stats?.totalUsers || 7;
-  const totalVolunteers = stats?.totalVolunteers || 450;
-  const totalNgos = stats?.totalNgos || 8;
-  const totalEvents = stats?.totalEvents || 10;
-  const totalDonations = stats?.totalDonationAmount || 125000;
-  const pendingApprovals = (stats?.pendingApprovals !== undefined) ? stats.pendingApprovals : (pendingNgos.length + pendingEvents.length);
+  const totalUsers = Number(stats?.totalUsers ?? 0);
+  const totalVolunteers = Number(stats?.totalVolunteers ?? 0);
+  const totalNgos = Number(stats?.totalNgos ?? 0);
+  const totalEvents = Number(stats?.totalEvents ?? 0);
+  const totalDonations = Number(stats?.totalDonationAmount ?? 0);
+
+  const pendingApprovals =
+    Number(stats?.pendingApprovals ?? 0);
 
   return (
     <div className="space-y-7">
@@ -342,7 +340,7 @@ export default function AdminDashboardHome() {
         <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Donation Statistics</h3>
+              <h3 className="text-sm font-bold text-slate-900">DoAnation Statistics</h3>
               <p className="text-xs text-slate-500">Monthly funds inflow in INR (₹)</p>
             </div>
             <HeartHandshake className="w-4 h-4 text-rose-500" />

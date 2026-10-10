@@ -20,10 +20,15 @@ router.get('/public-stats', async (req, res) => {
     const [events] = await query('SELECT COUNT(*) as count FROM events WHERE status = "approved"');
     const [donations] = await query('SELECT SUM(amount) as total FROM donations WHERE status = "completed"');
 
-    const totalNgos = (ngos && ngos[0]?.count) || 8;
+    /*const totalNgos = (ngos && ngos[0]?.count) || 8;
     const totalVolunteers = (volunteers && volunteers[0]?.count) || 450;
     const totalEvents = (events && events[0]?.count) || 10;
-    const totalDonations = (donations && donations[0]?.total) || 125000;
+    const totalDonations = (donations && donations[0]?.total) || 125000;*/
+
+    const totalNgos = Number(ngos?.[0]?.count ?? 0);
+    const totalVolunteers = Number(volunteers?.[0]?.count ?? 0);
+    const totalEvents = Number(events?.[0]?.count ?? 0);
+    const totalDonations = Number(donations?.[0]?.total ?? 0);
 
     res.json({
       success: true,
@@ -38,22 +43,15 @@ router.get('/public-stats', async (req, res) => {
         totalDonations,
       },
     });
-  } catch (error) {
-    console.error('Public stats query error:', error);
-    res.json({
-      success: true,
-      data: {
-        total_ngos: 8,
-        total_volunteers: 450,
-        total_events: 10,
-        total_donations: 125000,
-        totalNgos: 8,
-        totalVolunteers: 450,
-        totalEvents: 10,
-        totalDonations: 125000,
-      },
-    });
-  }
+  } 
+catch (error) {
+  console.error('Public stats query error:', error);
+
+  return res.status(500).json({
+    success: false,
+    message: 'Failed to load public statistics',
+  });
+}
 });
 
 // Apply Admin Authorization to subsequent admin management routes
@@ -72,10 +70,10 @@ router.get('/stats', async (req, res) => {
     const [certificates] = await query('SELECT id FROM certificates');
 
     // Calculations
-    const totalDonationAmount = (donations || []).reduce(
+    /*const totalDonationAmount = (donations || []).reduce(
       (sum, d) => sum + parseFloat(d.amount || 0),
       0
-    );
+    );*/
 
     const pendingNgos = (ngos || []).filter((n) => n.verification_status === 'pending').length;
     const pendingEvents = (events || []).filter((e) => e.status === 'pending').length;
@@ -107,7 +105,7 @@ router.get('/stats', async (req, res) => {
     };
 
     // Monthly User Growth Series for Recharts
-    const userGrowth = [
+    /*const userGrowth = [
       { month: 'Oct', users: 140, volunteers: 45, ngos: 2 },
       { month: 'Nov', users: 210, volunteers: 85, ngos: 3 },
       { month: 'Dec', users: 320, volunteers: 140, ngos: 5 },
@@ -131,6 +129,122 @@ router.get('/stats', async (req, res) => {
       { name: 'Verified', value: ngosByStatus.verified || 6, color: '#10b981' },
       { name: 'Pending', value: ngosByStatus.pending || 1, color: '#f59e0b' },
       { name: 'Rejected', value: ngosByStatus.rejected || 1, color: '#ef4444' },
+    ];*/
+
+
+    // Calculate total donations from completed transactions only
+    const totalDonationAmount = (donations || [])
+      .filter((d) => String(d.status).toLowerCase() === 'completed')
+      .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+    // Generate the last 6 calendar months from actual database records
+    const now = new Date();
+    const firstMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 5,
+      1
+    );
+
+    const months = Array.from({ length: 6 }, (_, i) => {
+      const date = new Date(
+        firstMonth.getFullYear(),
+        firstMonth.getMonth() + i,
+        1
+      );
+
+      return {
+        key: `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, '0')}`,
+        month: date.toLocaleString('en-US', { month: 'short' }),
+        year: date.getFullYear(),
+        users: 0,
+        volunteers: 0,
+        amount: 0,
+        donationsCount: 0,
+      };
+    });
+
+    const monthMap = new Map(months.map((m) => [m.key, m]));
+
+    const getMonthKey = (value) => {
+      if (!value) return null;
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return null;
+
+      return `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, '0')}`;
+    };
+
+    // Count registrations in each month
+    (users || []).forEach((user) => {
+      const key = getMonthKey(user.created_at);
+      const month = monthMap.get(key);
+
+      if (month) month.users += 1;
+    });
+
+    // Count volunteer profiles created in each month
+    (volunteers || []).forEach((volunteer) => {
+      const key = getMonthKey(volunteer.created_at);
+      const month = monthMap.get(key);
+
+      if (month) month.volunteers += 1;
+    });
+
+    // Sum completed donations in each month
+    (donations || [])
+      .filter((d) => String(d.status).toLowerCase() === 'completed')
+      .forEach((donation) => {
+        const key = getMonthKey(donation.donated_at);
+        const month = monthMap.get(key);
+
+        if (month) {
+          month.amount += Number(donation.amount || 0);
+          month.donationsCount += 1;
+        }
+      });
+
+    // Convert monthly registrations into cumulative totals
+    let cumulativeUsers = 0;
+    let cumulativeVolunteers = 0;
+
+    const userGrowth = months.map((month) => {
+      cumulativeUsers += month.users;
+      cumulativeVolunteers += month.volunteers;
+
+      return {
+        month: `${month.month} ${String(month.year).slice(-2)}`,
+        users: cumulativeUsers,
+        volunteers: cumulativeVolunteers,
+      };
+    });
+
+    const donationStatistics = months.map((month) => ({
+      month: `${month.month} ${String(month.year).slice(-2)}`,
+      amount: month.amount,
+      donationsCount: month.donationsCount,
+    }));
+
+    // Real NGO verification counts; never substitute sample values
+    const ngoVerificationChart = [
+      {
+        name: 'Verified',
+        value: ngosByStatus.verified,
+        color: '#10b981',
+      },
+      {
+        name: 'Pending',
+        value: ngosByStatus.pending,
+        color: '#f59e0b',
+      },
+      {
+        name: 'Rejected',
+        value: ngosByStatus.rejected,
+        color: '#ef4444',
+      },
     ];
 
     res.json({

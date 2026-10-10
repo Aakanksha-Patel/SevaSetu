@@ -309,7 +309,7 @@ export default function AdminPanel() {
                       </td>
                       <td className="py-3 px-4 text-xs font-medium text-slate-700">{ngo.sector}</td>
                       <td className="py-3 px-4 text-xs text-slate-500">
-                        {ngo.city}, {ngo.state || 'India'}
+                        {ngo.location}, {ngo.state || 'India'}
                       </td>
                       <td className="py-3 px-4">
                         <Badge
@@ -388,7 +388,7 @@ export default function AdminPanel() {
                           {u.role.toUpperCase()}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 text-xs text-slate-500">{u.city || 'India'}</td>
+                      <td className="py-3 px-4 text-xs text-slate-500">{u.location || 'India'}</td>
                       <td className="py-3 px-4">
                         {u.role !== 'admin' && (
                           <button

@@ -42,6 +42,9 @@ CREATE TABLE users (
     INDEX idx_users_email (email),
     INDEX idx_users_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE users
+    -> ADD COLUMN status ENUM('active', 'inactive')
+    -> DEFAULT 'active';
 
 -- =======================================================
 -- 2. NGOS TABLE
